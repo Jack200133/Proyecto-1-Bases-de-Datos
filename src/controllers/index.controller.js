@@ -55,16 +55,29 @@ const updateUser = async (req, res) => {
 }
 
 const passwordCheck = async (req,res) =>{
-    const id = req.params.id
-    const { name, pass } = req.body
-    const response = await pool.query('SELECT * FROM usuarios WHERE id = $1',[id])
-    const hashed = response.rows[0].contraseña
-    const prn = await bcrypt.compare(pass,hashed)
-    if(prn){
-        res.json("Prueba completada")
+    const correo = req.params.correo
+    const pass = req.params.pass
+    console.log(pass,correo)
+    const response = await pool.query('SELECT * FROM usuarios WHERE correo = $1',[correo])
+    console.log(response)
+    if(response.rowCount === 0){
+        res.json({
+            completado: false
+        })
     }else{
-        res.json("Prueba incompleta")
+        const hashed = response.rows[0].contraseña
+        const prn = await bcrypt.compare(pass,hashed)
+        if(prn){
+            res.json({
+                completado: true
+            })
+        }else{
+            res.json({
+                completado: false
+            })
+        }
     }
+    
     
 }
 
