@@ -14,7 +14,8 @@ const {getUsers,
     getPelisByDirector,
     getPelisByPremio,
     getPelisByCategoria,
-    getPelisByFecha}= require("../controllers/index.controller")
+    getPelisByFecha,
+    getUsersByCorreo}= require("../controllers/index.controller")
 
 // http://localhost:5000/users/3
 router.get('/users',getUsers)
@@ -32,4 +33,5 @@ router.get('/pelis/directores/:id',getPelisByDirector)
 router.get('/pelis/premio/:id',getPelisByPremio)
 router.get('/pelis/categoria/:id',getPelisByCategoria)
 router.get('/pelis/fecha/:id',getPelisByFecha)
+router.get('/users/perfil/:correo',getUsersByCorreo)
 module.exports = router

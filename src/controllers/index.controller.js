@@ -26,14 +26,26 @@ const createUser = async(req,res)=>{
     const rondas = 10
     const haspass = await bcrypt.hash(pass, rondas);
 
-    const response = await pool.query('insert into usuarios(correo,nombre,contraseña,estado,suscripcion) values($1,$2,$3,$4,$5)',[correo,name,haspass,false,suscripcion])
-    console.log(response)
+    const prof = await pool.query('SELECT * FROM usuarios WHERE correo = $1',[correo])
+    console.log(prof)
+    if(prof.rowCount ===0){
+        const response = await pool.query('insert into usuarios(correo,nombre,contraseña,estado,suscripcion) values($1,$2,$3,$4,$5)',[correo,name,haspass,false,suscripcion])
+        console.log(response)
+        res.json({
+             message:'Agregado el usuario',
+             status: true,
+             body:{
+                 user:{name,correo,suscripcion}
+             }
+        })
+    }
     res.json({
-         message:'Agregado el usuario',
-         body:{
-             user:{name,correo,suscripcion}
-         }
-    })
+        message:'Usuario ya existente',
+        status: false,
+        body:{
+            user:{name,correo,suscripcion}
+        }
+   })
 }
 
 const updateUser = async (req, res) => {
@@ -138,6 +150,14 @@ const getPelisByFecha = async (req,res)=>{
     const response = await pool.query('select distinct ps.*  from peliculas_series ps where ps.fecha_estreno >=$1',[id])
     res.json(response.rows)
 }
+
+const getUsersByCorreo = async(req,res)=>{
+    const correo = req.params.correo
+    
+    const response = await pool.query('select * from perfil inner join usuarios on usuarios.id = perfil.id_perfil where usuarios.correo = $1',[correo])
+    res.json(response.rows)
+}
+
 module.exports = {
     getUsers,
     createUser,
@@ -153,5 +173,6 @@ module.exports = {
     getPelisByDirector,
     getPelisByPremio,
     getPelisByCategoria,
-    getPelisByFecha
+    getPelisByFecha,
+    getUsersByCorreo
 }
