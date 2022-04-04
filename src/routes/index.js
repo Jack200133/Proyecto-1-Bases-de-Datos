@@ -15,18 +15,20 @@ const {getUsers,
     getPelisByPremio,
     getPelisByCategoria,
     getPelisByFecha,
-    getUsersByCorreo,
+    getPerfilByCorreo,
     createVisto,
     createViendo,
     createFav,
     getFavByID,
     getViendoByID,
-    getVistoByID
+    getVistoByID,
+    getUsersByCorreo
 }= require("../controllers/index.controller")
 
 // http://localhost:5000/users/3
 router.get('/users',getUsers)
-router.get('/users/:id',getUserByID) 
+router.get('/users/:id',getUserByID)
+router.get('/usersC/:correo', getUsersByCorreo) 
 router.post('/users',createUser)
 router.delete('/users/:id',delUser)
 router.put('/users/:id',updateUser)
@@ -40,7 +42,7 @@ router.get('/pelis/directores/:id',getPelisByDirector)
 router.get('/pelis/premio/:id',getPelisByPremio)
 router.get('/pelis/categoria/:id',getPelisByCategoria)
 router.get('/pelis/fecha/:id',getPelisByFecha)
-router.get('/perfil/:correo',getUsersByCorreo)
+router.get('/perfil/:correo',getPerfilByCorreo)
 router.post('/visto/:id',createVisto)
 router.get('/visto/:id',getVistoByID)
 router.post('/viendo/:id',createViendo)

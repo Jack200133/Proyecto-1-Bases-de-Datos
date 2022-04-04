@@ -29,6 +29,15 @@ const getUserByID = async (req,res)=>{
     }
 }
 
+const getUsersByCorreo = async (req,res)=>{
+    try{
+        const response = await pool.query('SELECT * FROM usuarios WHERE correo = $1',[req.params.correo])
+        res.json(response.rows)
+    }catch{
+
+    }
+}
+
 const createUser = async(req,res)=>{
 
     try{
@@ -228,7 +237,7 @@ const getPelisByFecha = async (req,res)=>{
     
 }
 
-const getUsersByCorreo = async(req,res)=>{
+const getPerfilByCorreo = async(req,res)=>{
     try{
         const correo = req.params.correo
         console.log(correo)
@@ -323,6 +332,7 @@ module.exports = {
     getUsers,
     createUser,
     getUserByID,
+    getUsersByCorreo,
     delUser,
     updateUser,
     getPelis,
@@ -335,7 +345,7 @@ module.exports = {
     getPelisByPremio,
     getPelisByCategoria,
     getPelisByFecha,
-    getUsersByCorreo,
+    getPerfilByCorreo,
     createVisto,
     createViendo,
     createFav,
