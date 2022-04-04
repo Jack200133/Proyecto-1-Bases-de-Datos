@@ -15,11 +15,18 @@ const {getUsers,
     getPelisByPremio,
     getPelisByCategoria,
     getPelisByFecha,
-    getUsersByCorreo}= require("../controllers/index.controller")
+    getUsersByCorreo,
+    createVisto,
+    createViendo,
+    createFav,
+    getFavByID,
+    getViendoByID,
+    getVistoByID
+}= require("../controllers/index.controller")
 
 // http://localhost:5000/users/3
 router.get('/users',getUsers)
-router.get('/users/:id',getUserByID)
+router.get('/users/:id',getUserByID) 
 router.post('/users',createUser)
 router.delete('/users/:id',delUser)
 router.put('/users/:id',updateUser)
@@ -34,4 +41,10 @@ router.get('/pelis/premio/:id',getPelisByPremio)
 router.get('/pelis/categoria/:id',getPelisByCategoria)
 router.get('/pelis/fecha/:id',getPelisByFecha)
 router.get('/perfil/:correo',getUsersByCorreo)
+router.post('/visto/:id',createVisto)
+router.get('/visto/:id',getVistoByID)
+router.post('/viendo/:id',createViendo)
+router.get('/viendo/:id',getViendoByID)
+router.post('/fav/:id',createFav)
+router.get('/fav/:id',getFavByID)
 module.exports = router

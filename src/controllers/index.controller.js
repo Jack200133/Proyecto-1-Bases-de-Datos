@@ -243,6 +243,82 @@ const getUsersByCorreo = async(req,res)=>{
 }
 
 
+const createVisto = async (req, res) => {
+    try{
+        const id = req.params.id
+        const {idmovie} = req.body
+        
+        const response = await pool.query('insert into Visto values($1,$2)',[id, idmovie])
+        console.log(response)
+        res.json('Visto created')
+
+    }catch{
+
+    }
+    
+}
+
+const createViendo = async (req, res) => {
+    try{
+        const id = req.params.id
+        const {idmovie} = req.body
+        
+        const response = await pool.query('insert into Viendo values($1,$2)',[id, idmovie])
+        console.log(response)
+        res.json('Viendo created')
+
+    }catch{
+
+    }
+    
+}
+const createFav = async (req, res) => {
+    try{
+        const id = req.params.id
+        const {idmovie} = req.body
+        
+        const response = await pool.query('insert into favoritos values($1,$2)',[id, idmovie])
+        console.log(response)
+        res.json('Favorito created')
+
+    }catch{
+
+    }
+    
+}
+
+const getVistoByID = async (req,res)=>{
+    try{
+        const id = req.params.id
+        const response = await pool.query('SELECT ps.* FROM Visto f join peliculas_series ps on ps.codigo = f.id_contenido WHERE id_perfil = $1',[id])
+        res.json(response.rows)
+    }catch{
+
+    }
+}
+
+const getFavByID = async (req,res)=>{
+    try{
+        const id = req.params.id
+        const response = await pool.query('SELECT ps.* FROM favoritos f join peliculas_series ps on ps.codigo = f.codigo_contenido WHERE id_perfil = $1',[id])
+        res.json(response.rows)
+    }catch{
+
+    }
+}
+
+const getViendoByID = async (req,res)=>{
+    try{
+        const id = req.params.id
+        const response = await pool.query('SELECT ps.* FROM Viendo f join peliculas_series ps on ps.codigo = f.codigo_contenido WHERE id_perfil = $1',[id])
+        res.json(response.rows)
+    }catch{
+
+    }
+}
+
+
+
 module.exports = {
     getUsers,
     createUser,
@@ -260,4 +336,10 @@ module.exports = {
     getPelisByCategoria,
     getPelisByFecha,
     getUsersByCorreo,
+    createVisto,
+    createViendo,
+    createFav,
+    getFavByID,
+    getViendoByID,
+    getVistoByID
 }
