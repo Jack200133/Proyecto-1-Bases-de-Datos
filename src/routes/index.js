@@ -33,5 +33,5 @@ router.get('/pelis/directores/:id',getPelisByDirector)
 router.get('/pelis/premio/:id',getPelisByPremio)
 router.get('/pelis/categoria/:id',getPelisByCategoria)
 router.get('/pelis/fecha/:id',getPelisByFecha)
-router.get('/users/perfil/:correo',getUsersByCorreo)
+router.get('/perfil/:correo',getUsersByCorreo)
 module.exports = router
