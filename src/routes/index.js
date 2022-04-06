@@ -22,7 +22,9 @@ const {getUsers,
     getFavByID,
     getViendoByID,
     getVistoByID,
-    getUsersByCorreo
+    getUsersByCorreo,
+    createProfile,
+    updateProf
 }= require("../controllers/index.controller")
 
 // http://localhost:5000/users/3
@@ -49,4 +51,6 @@ router.post('/viendo/:id',createViendo)
 router.get('/viendo/:id',getViendoByID)
 router.post('/fav/:id',createFav)
 router.get('/fav/:id',getFavByID)
+router.post('/profile', createProfile)
+router.put('/profile/:id',updateProf)
 module.exports = router

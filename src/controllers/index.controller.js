@@ -51,12 +51,11 @@ const createUser = async(req,res)=>{
         if(prof.rowCount ===0){
             const response = await pool.query('insert into usuarios(correo,nombre,contraseña,estado,suscripcion) values($1,$2,$3,$4,$5)',[correo,name,haspass,false,suscripcion])
             console.log(response)
+            const secondr =  await pool.query('select * from usuarios where correo = $1', [correo])
             res.json({
                 message:'Agregado el usuario',
                 status: true,
-                body:{
-                    user:{name,correo,suscripcion}
-                }
+                user:secondr.rows
             })
         }
         res.json({
@@ -326,7 +325,42 @@ const getViendoByID = async (req,res)=>{
     }
 }
 
+const createProfile = async (req, res)=> {
+    try{
+        const {id_usuario, name} = req.body
+        console.log(name)
+        const response = await pool.query('insert into perfil(id_usuario, nombre, viendo, activo) values ($1,$2,$3,$4)',[id_usuario, name, false, true])
+        console.log(response)
+        res.json('Perfil created')
+    }catch{
 
+    }
+}
+
+const updateProf = async (req, res) => {
+    try{
+        const id = req.params.id
+        const {suscripcion,numerocuentas} = req.body
+        console.log(id, name, pass)
+        const response = await pool.query('Update usuarios SET correo = $1, nombre = $2, contraseña = $3,estado = $4,suscripcion =$5 WHERE id =$6',[
+            correo,
+            name,
+            haspass,
+            estado,
+            suscripcion,
+            id
+        ])
+        console.log(response)
+        res.json('User Updated')
+
+    }catch{
+
+    }
+    
+}
+
+/*  UPDATE usuarios SET suscripcion = $1 WHERE id = $2 ;
+    UPDATE perfil SET activo = true WHERE id_perfil = $1; */
 
 module.exports = {
     getUsers,
@@ -351,5 +385,7 @@ module.exports = {
     createFav,
     getFavByID,
     getViendoByID,
-    getVistoByID
+    getVistoByID,
+    createProfile,
+    updateProf
 }
