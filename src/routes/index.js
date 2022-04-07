@@ -24,7 +24,11 @@ const {getUsers,
     getVistoByID,
     getUsersByCorreo,
     createProfile,
-    updateProf
+    updateProf,
+    getAnuncios,
+    getRecomendaciones,
+    updateViendo,
+    AnuncioVisto
 }= require("../controllers/index.controller")
 
 // http://localhost:5000/users/3
@@ -52,5 +56,9 @@ router.get('/viendo/:id',getViendoByID)
 router.post('/fav/:id',createFav)
 router.get('/fav/:id',getFavByID)
 router.post('/profile', createProfile)
+router.post('/adseen', AnuncioVisto)
 router.get('/profile/:id/:sus/:num',updateProf)
+router.get('/anuncios', getAnuncios)
+router.get('/recom/:id', getRecomendaciones)
+router.get('/viendo/:id/:viendo',updateViendo)
 module.exports = router

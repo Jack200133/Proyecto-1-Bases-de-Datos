@@ -14,8 +14,12 @@ const getUsers = async (req,res) => {
     try{
         const response = await pool.query('Select * from usuarios')
         res.status(200).json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
   
 }
@@ -24,8 +28,12 @@ const getUserByID = async (req,res)=>{
     try{
         const response = await pool.query('SELECT * FROM usuarios WHERE id = $1',[req.params.id])
         res.json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
 }
 
@@ -33,8 +41,12 @@ const getUsersByCorreo = async (req,res)=>{
     try{
         const response = await pool.query('SELECT * FROM usuarios WHERE correo = $1',[req.params.correo])
         res.json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
 }
 
@@ -66,8 +78,12 @@ const createUser = async(req,res)=>{
             }
          })
         
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -90,8 +106,12 @@ const updateUser = async (req, res) => {
         console.log(response)
         res.json('User Updated')
 
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -121,8 +141,12 @@ const passwordCheck = async (req,res) =>{
             }
         }
 
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
 }
 
@@ -130,8 +154,12 @@ const delUser = async(req,res) =>{
     try{
         const response = await pool.query('DELETE FROM usuarios where id=$1',[req.params.id])
         res.json(`User ${req.params.id} eliminado de BD`)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -140,8 +168,12 @@ const getPelis = async (req,res) => {
     try{
         const response = await pool.query('Select * from peliculas_series')
         res.status(200).json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -149,8 +181,12 @@ const getPelisByID = async (req,res)=>{
     try{
         const response = await pool.query('SELECT * FROM peliculas_series WHERE codigo = $1',[req.params.id])
         res.json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -161,8 +197,12 @@ const getPelisByName = async (req,res)=>{
         console.log(id)
         const response = await pool.query('select distinct * from peliculas_series ps where lower(ps.nombre) like $1',[id])
         res.json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -173,8 +213,12 @@ const getPelisByActor = async (req,res)=>{
         const temp = await pool.query("select distinct ps.* from peliculas_series ps inner join actua a  on ps.codigo= a.id_contenido inner join actor a2  on a.id_actor =a2.id where  lower(concat(a2.nombre,' ',a2.apellido)) like $1" ,[id])
         res.json(temp.rows)
 
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -185,8 +229,12 @@ const getPelisByGenero = async (req,res)=>{
         const response = await pool.query('select distinct ps.* from peliculas_series ps inner join contenido_genero cg on ps.codigo= cg.id_contenido inner join generos g on cg.id_genero =g.id_genero where lower(g.genero) like $1',[id])
         res.json(response.rows)
 
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -197,8 +245,12 @@ const getPelisByDirector = async (req,res)=>{
         const response = await pool.query("select distinct ps.* from peliculas_series ps  inner join dirigio d on ps.codigo= d.id_contenido inner join directores d2  on d.id_director =d2.id where  lower(concat(d2.nombre,' ',d2.apellido)) like  $1",[id])
         res.json(response.rows)
 
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -218,8 +270,12 @@ const getPelisByCategoria = async (req,res)=>{
         console.log(id)
         const response = await pool.query('select * from peliculas_series ps where lower(categoria) like $1',[id])
         res.json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
 }
     
@@ -230,8 +286,12 @@ const getPelisByFecha = async (req,res)=>{
         console.log(id)
         const response = await pool.query('select distinct ps.*  from peliculas_series ps where ps.fecha_estreno >=$1',[id])
         res.json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -244,8 +304,12 @@ const getPerfilByCorreo = async(req,res)=>{
         console.log(response.rows)
         res.json(response.rows)
 
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -256,16 +320,41 @@ const createVisto = async (req, res) => {
         const id = req.params.id
         const {idmovie} = req.body
         
-        const response = await pool.query('insert into Visto values($1,$2)',[id, idmovie])
         const other = await pool.query('delete from viendo where id_perfil = $1 and codigo_contenido = $2', [id, idmovie])
+        const response = await pool.query('insert into Visto values($1,$2)',[id, idmovie])
         console.log(response)
+        console.log(other)
         res.json('Visto created')
 
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
+
+const AnuncioVisto = async (req, res) => {
+    try{
+        const {contenido} = req.body
+        
+        const response = await pool.query('insert into reproduccion_anuncios values ($1,current_timestamp)',[contenido])
+        console.log(response)
+        res.json('Anuncio Insertado')
+
+    }catch (e){
+        console.log("ERROR")
+
+        res.json({
+            message:'Error'
+        })
+    }
+    
+}
+
+
 
 const createViendo = async (req, res) => {
     try{
@@ -276,8 +365,12 @@ const createViendo = async (req, res) => {
         console.log(response)
         res.json('Viendo created')
 
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -290,8 +383,12 @@ const createFav = async (req, res) => {
         console.log(response)
         res.json('Favorito created')
 
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
@@ -301,8 +398,12 @@ const getVistoByID = async (req,res)=>{
         const id = req.params.id
         const response = await pool.query('SELECT ps.* FROM Visto f join peliculas_series ps on ps.codigo = f.id_contenido WHERE id_perfil = $1',[id])
         res.json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
 }
 
@@ -311,8 +412,12 @@ const getFavByID = async (req,res)=>{
         const id = req.params.id
         const response = await pool.query('SELECT ps.* FROM favoritos f join peliculas_series ps on ps.codigo = f.codigo_contenido WHERE id_perfil = $1',[id])
         res.json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
 }
 
@@ -321,8 +426,12 @@ const getViendoByID = async (req,res)=>{
         const id = req.params.id
         const response = await pool.query('SELECT ps.* FROM Viendo f join peliculas_series ps on ps.codigo = f.codigo_contenido WHERE id_perfil = $1',[id])
         res.json(response.rows)
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
 }
 
@@ -333,8 +442,12 @@ const createProfile = async (req, res)=> {
         const response = await pool.query('insert into perfil(id_usuario, nombre, viendo, activo) values ($1,$2,$3,$4)',[id_usuario, name, false, true])
         console.log(response)
         res.json('Perfil created')
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
 }
 
@@ -360,12 +473,68 @@ const updateProf = async (req, res) => {
         //console.log(response)
         res.json('User Updated')
 
-    }catch{
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error'
+        })
     }
     
 }
 
+const getAnuncios = async (req, res) => {
+    try{
+        const response = await pool.query('select * from anuncio')
+        res.json(response.rows)
+    }catch (e){
+        console.log("ERROR")
+
+        res.json({
+            message:'Error'
+        })
+    }
+}
+const getRecomendaciones = async (req,res)=>{
+
+        const id = req.params.id
+        const getIDs = await pool.query('select * from favoritos f where id_perfil  = $1 union select * from visto where id_perfil  = $1 union select * from viendo where id_perfil  = $1',[id])
+        //console.log(getIDs)
+        let getGeneros = []
+        for(const pepe in getIDs.rows){
+            const chuiquita = await pool.query('select id_genero from peliculas_series ps join contenido_genero cg on cg.id_contenido = ps.codigo where codigo = $1', [getIDs.rows[pepe].codigo_contenido])
+            getGeneros.push(chuiquita.rows)
+            //console.log(getIDs.rows[pepe].codigo_contenido)
+        } 
+        //console.log(getGeneros)
+        let final = []
+        for (const okaru in getGeneros){
+           for(const momo in getGeneros[okaru]){
+               console.log(getGeneros[okaru][momo].id_genero)
+               const dadadan = await pool.query('select distinct(ps.*) from peliculas_series ps join contenido_genero cg on cg.id_contenido = ps.codigo where cg.id_genero = $1',[getGeneros[okaru][momo].id_genero])
+               for(const kirito in dadadan.rows){
+                   console.log(dadadan.rows[kirito].codigo)
+                   if(!final.includes(dadadan.rows[kirito])){
+                        final.push(dadadan.rows[kirito])
+                   }   
+               }
+              
+           }
+        }
+       
+        res.json(final)
+    
+}
+
+
+const updateViendo = async (req, res) => {
+
+    const id = req.params.id
+    const viendo = req.params.viendo
+    const request = await pool.query('UPDATE perfil SET viendo = $1 WHERE id_perfil = $2',[viendo,id])
+    res.json('Profile Updated')
+
+}
 /*  UPDATE usuarios SET suscripcion = $1 WHERE id = $2 ;
     UPDATE perfil SET activo = true WHERE id_perfil = $1; */
 
@@ -394,5 +563,9 @@ module.exports = {
     getViendoByID,
     getVistoByID,
     createProfile,
-    updateProf
+    updateProf,
+    getAnuncios,
+    getRecomendaciones,
+    updateViendo,
+    AnuncioVisto
 }
