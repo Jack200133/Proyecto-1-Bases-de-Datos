@@ -240,7 +240,7 @@ const getPerfilByCorreo = async(req,res)=>{
     try{
         const correo = req.params.correo
         console.log(correo)
-        const response = await pool.query('select * from perfil p where id_usuario in ( select id from usuarios u where correo =$1);',[correo])
+        const response = await pool.query('select * from perfil p where id_usuario in ( select id from usuarios u where correo =$1)and activo = true;',[correo])
         console.log(response.rows)
         res.json(response.rows)
 
@@ -257,6 +257,7 @@ const createVisto = async (req, res) => {
         const {idmovie} = req.body
         
         const response = await pool.query('insert into Visto values($1,$2)',[id, idmovie])
+        const other = await pool.query('delete from viendo where id_perfil = $1 and codigo_contenido = $2', [id, idmovie])
         console.log(response)
         res.json('Visto created')
 
@@ -339,18 +340,24 @@ const createProfile = async (req, res)=> {
 
 const updateProf = async (req, res) => {
     try{
+        
         const id = req.params.id
-        const {suscripcion,numerocuentas} = req.body
-        console.log(id, name, pass)
-        const response = await pool.query('Update usuarios SET correo = $1, nombre = $2, contraseña = $3,estado = $4,suscripcion =$5 WHERE id =$6',[
-            correo,
-            name,
-            haspass,
-            estado,
-            suscripcion,
-            id
-        ])
-        console.log(response)
+        const sus = req.params.sus
+        const num = req.params.num
+        //console.log(id)
+        //const {suscripcion,numerocuentas} = req.body
+        console.log(id, sus, num)
+        const newSus = await pool.query('UPDATE usuarios SET suscripcion = $1 WHERE id = $2',[sus,id])
+        const porfil = await pool.query('select * from perfil where id_usuario =  $1 limit $2',[id,num])
+        const setFalse = await pool.query('UPDATE perfil SET activo = false WHERE id_usuario =$1',[id])
+        //console.log(newSus)
+        for(const pepe in porfil.rows){
+            const setTreu = await pool.query('UPDATE perfil SET activo = true WHERE id_perfil =$1', [porfil.rows[pepe].id_perfil])
+            console.log(porfil.rows[pepe].id_perfil)
+        }
+        
+        //const newProf = await poolquery('UPDATE perfil SET activo = true WHERE id_perfil = $1 limit $2;')
+        //console.log(response)
         res.json('User Updated')
 
     }catch{

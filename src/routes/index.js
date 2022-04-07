@@ -52,5 +52,5 @@ router.get('/viendo/:id',getViendoByID)
 router.post('/fav/:id',createFav)
 router.get('/fav/:id',getFavByID)
 router.post('/profile', createProfile)
-router.put('/profile/:id',updateProf)
+router.get('/profile/:id/:sus/:num',updateProf)
 module.exports = router
