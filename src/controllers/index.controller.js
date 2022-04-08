@@ -12,13 +12,14 @@ const pool = new Pool ({
 
 const getUsers = async (req,res) => {
     try{
-        const response = await pool.query('Select * from usuarios')
+        const response = await pool.query('Select * from usuarios order by id')
         res.status(200).json(response.rows)
     }catch (e){
         console.log("ERROR")
 
         res.json({
-            message:'Error'
+            message:'Error',
+            error: e
         })
     }
   
@@ -60,6 +61,7 @@ const createUser = async(req,res)=>{
 
         const prof = await pool.query('SELECT * FROM usuarios WHERE correo = $1',[correo])
         console.log(prof)
+        console.log(correo,name,haspass,false,suscripcion)
         if(prof.rowCount ===0){
             const response = await pool.query('insert into usuarios(correo,nombre,contraseña,estado,suscripcion) values($1,$2,$3,$4,$5)',[correo,name,haspass,false,suscripcion])
             console.log(response)
@@ -81,7 +83,7 @@ const createUser = async(req,res)=>{
     }catch (e){
         console.log("ERROR")
 
-        res.json({
+        res.status(400).json({
             message:'Error'
         })
     }
@@ -535,8 +537,94 @@ const updateViendo = async (req, res) => {
     res.json('Profile Updated')
 
 }
-/*  UPDATE usuarios SET suscripcion = $1 WHERE id = $2 ;
-    UPDATE perfil SET activo = true WHERE id_perfil = $1; */
+
+
+const createAdmin = async(req,res)=>{
+
+    try{
+        const {name,pass} = req.body
+        //const id = 'DEFAULT'
+        const rondas = 10
+        const haspass = await bcrypt.hash(pass, rondas);
+        console.log(name,haspass)
+        const response = await pool.query('insert into administrador(nombre,contraseña) values($1,$2)',[name,haspass])
+        console.log(response)
+        res.json({
+            message:'Agregado el Admin',
+            status: true,
+            user:{name,pass}
+        })
+        
+        
+    }catch (e){
+        console.log("ERROR")
+
+        res.json({
+            message:'Error',
+            error:e
+        })
+    }
+    
+}
+
+const AdminCheck = async (req,res) =>{
+    try{
+        const name = req.params.name
+        const pass = req.params.pass
+        console.log(pass,name)
+        const response = await pool.query('SELECT * FROM administrador WHERE nombre = $1',[name])
+        console.log(response)
+        if(response.rowCount === 0){
+            res.json({
+                completado: false
+            })
+        }else{
+            const hashed = response.rows[0].contraseña
+            const prn = await bcrypt.compare(pass,hashed)
+            if(prn){
+                res.json({
+                    completado: true
+                })
+            }else{
+                res.json({
+                    completado: false
+                })
+            }
+        }
+
+    }catch (e){
+        console.log("ERROR")
+
+        res.json({
+            message:'Error'
+        })
+    }
+}
+
+const updateAdminUser = async (req, res) => {
+    try{
+        const id = req.params.id
+        const {valor,estado,tabla} = req.body
+        const response = await pool.query('update $4 set $1 =$2 where id = 3$',[
+            valor,
+            estado,
+            id,
+            tabla
+        ])
+        console.log(response)
+        res.json('User Updated')
+
+    }catch (e){
+        console.log("ERROR")
+
+        res.json({
+            message:'Error'
+        })
+    }
+    
+}
+
+
 
 module.exports = {
     getUsers,
@@ -567,5 +655,8 @@ module.exports = {
     getAnuncios,
     getRecomendaciones,
     updateViendo,
-    AnuncioVisto
+    AnuncioVisto,
+    createAdmin,
+    AdminCheck,
+    updateAdminUser
 }

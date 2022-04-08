@@ -28,7 +28,10 @@ const {getUsers,
     getAnuncios,
     getRecomendaciones,
     updateViendo,
-    AnuncioVisto
+    AnuncioVisto,
+    createAdmin,
+    AdminCheck,
+    updateAdminUser
 }= require("../controllers/index.controller")
 
 // http://localhost:5000/users/3
@@ -61,4 +64,7 @@ router.get('/profile/:id/:sus/:num',updateProf)
 router.get('/anuncios', getAnuncios)
 router.get('/recom/:id', getRecomendaciones)
 router.get('/viendo/:id/:viendo',updateViendo)
+router.post('/admin/',createAdmin)
+router.get('/admin/:name/:pass',AdminCheck)
+router.put('/admin/:id',updateAdminUser)
 module.exports = router
