@@ -90,6 +90,49 @@ const createUser = async(req,res)=>{
     
 }
 
+const createPelis = async (req, res) => {
+    try{
+        const {nombre, categoria, fecha_estreno, duracion, link, imagen} = req.body
+
+        const prof = await pool.query('SELECT * FROM peliculas_series WHERE nombre = $1',[nombre])
+        
+        console.log(nombre, categoria, fecha_estreno, duracion, link, imagen)
+        console.log(prof.rows)
+         
+        if(prof.rowCount ===0){
+            const response = await pool.query('insert into peliculas_series(nombre,categoria,fecha_estreno,duracion,link,imagen) values($1,$2,$3,$4,$5,$6)',
+            [nombre, 
+            categoria,
+            fecha_estreno,
+            duracion,
+            link,
+            imagen])
+            console.log(response)
+            const secondr =  await pool.query('select * from peliculas_series where nombre = $1', [nombre])
+            res.json({
+                message:'Agregada la pelicula',
+                status: true,
+                user:secondr.rows
+            })
+        }
+        res.json({
+            message:'Pelicula ya existente',
+            status: false,
+            body:{
+                user:{nombre, categoria, fecha_estreno, duracion, link, imagen}
+            }
+         })
+        
+    }catch (e){
+        console.log("ERROR")
+
+        res.status(400).json({
+            message:'Error'
+        })
+    }
+
+}
+
 const updateUser = async (req, res) => {
     try{
         const id = req.params.id
@@ -604,24 +647,81 @@ const AdminCheck = async (req,res) =>{
 const updateAdminUser = async (req, res) => {
     try{
         const id = req.params.id
-        const {valor,estado,tabla} = req.body
-        const response = await pool.query('update $4 set $1 =$2 where id = 3$',[
-            valor,
-            estado,
-            id,
-            tabla
-        ])
-        console.log(response)
-        res.json('User Updated')
-
+        const {valor, estado,tabla} = req.body
+        console.log(valor, estado,tabla,id)
+        switch(tabla){
+            case 'usuarios':
+                console.log('SERIES')
+                switch(valor){
+                    case 'nombre' :
+                        const responseN = await pool.query('update usuarios set nombre = $1 where id = $2', [estado, id])
+                        console.log(responseN)
+                        res.json('User Updated')
+                        break;
+                    case 'correo' :
+                        const responseC = await pool.query('update usuarios set correo = $1 where id = $2', [estado, id])
+                        console.log(responseC)
+                        res.json('User Updated')
+                        break;
+                    case 'estado' :
+                        const responseE = await pool.query('update usuarios set estado = $1 where id = $2', [estado, id])
+                        console.log(responseE)
+                        res.json('User Updated')
+                        break;
+                    case 'suscripcion' :
+                        const responseS = await pool.query('update usuarios set suscripcion = $1 where id = $2', [estado, id])
+                        console.log(responseS)
+                        res.json('User Updated')
+                        break;
+                }
+                break;
+            case 'peliculas_series':
+                console.log('peliculas_series')
+                switch(valor){
+                    case 'nombre' :
+                        const responseN = await pool.query('update peliculas_series set nombre = $1 where codigo = $2', [estado, id])
+                        console.log(responseN)
+                        res.json('User Updated')
+                        break;
+                    case 'categoria' :
+                        const responseC = await pool.query('update peliculas_series set categoria = $1 where codigo = $2', [estado, id])
+                        console.log(responseC)
+                        res.json('User Updated')
+                        break;
+                    case 'fecha_estreno' :
+                        const responseE = await pool.query('update peliculas_series set fecha_estreno = $1 where codigo = $2', [estado, id])
+                        console.log(responseE)
+                        res.json('User Updated')
+                        break;
+                    case 'duracion' :
+                        console.log('duracion')
+                        const responseD = await pool.query('update peliculas_series set duracion = $1 where codigo = $2', [estado, id])
+                        console.log(responseD)
+                        res.json('User Updated')
+                        break;
+                    case 'link' :
+                        const responseL = await pool.query('update peliculas_series set link = $1 where codigo = $2', [estado, id])
+                        console.log(responseL)
+                        res.json('User Updated')
+                        break;
+                    case 'imagen' :
+                        const responseIM = await pool.query('update peliculas_series set imagen = $1 where codigo = $2', [estado, id])
+                        console.log(responseIM)
+                        res.json('User Updated')
+                        break;
+                }
+                break;
+        }
+        
     }catch (e){
         console.log("ERROR")
 
         res.json({
-            message:'Error'
+            message:'Error',
+            e:e
         })
     }
-    
+
 }
 
 
@@ -658,5 +758,6 @@ module.exports = {
     AnuncioVisto,
     createAdmin,
     AdminCheck,
-    updateAdminUser
+    updateAdminUser,
+    createPelis
 }

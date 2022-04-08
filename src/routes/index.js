@@ -31,7 +31,8 @@ const {getUsers,
     AnuncioVisto,
     createAdmin,
     AdminCheck,
-    updateAdminUser
+    updateAdminUser,
+    createPelis
 }= require("../controllers/index.controller")
 
 // http://localhost:5000/users/3
@@ -42,6 +43,7 @@ router.post('/users',createUser)
 router.delete('/users/:id',delUser)
 router.put('/users/:id',updateUser)
 router.get('/pelis',getPelis)
+router.post('/pelis', createPelis)
 router.get('/pelis/:id',getPelisByID)
 router.get('/passcheck/:correo/:pass',passwordCheck)
 router.get('/pelis/nombre/:id',getPelisByName)
