@@ -364,10 +364,10 @@ const getPerfilByCorreo = async(req,res)=>{
 const createVisto = async (req, res) => {
     try{
         const id = req.params.id
-        const {idmovie} = req.body
+        const {idmovie,sus} = req.body
 
         const other = await pool.query('delete from viendo where id_perfil = $1 and codigo_contenido = $2', [id, idmovie])
-        const response = await pool.query('insert into Visto values($1,$2, current_timestamp)',[id, idmovie])
+        const response = await pool.query('insert into Visto values($1,$2, current_timestamp,$3)',[id, idmovie,sus])
         console.log(response)
         console.log(other)
         res.json('Visto created')
@@ -405,13 +405,13 @@ const AnuncioVisto = async (req, res) => {
 const createViendo = async (req, res) => {
     try{
         const id = req.params.id
-        const {idmovie} = req.body
+        const {idmovie,sus} = req.body
         
         const existe = await pool.query('select * from Viendo where codigo_contenido = $1', [idmovie])
         console.log(existe.rows)
 
         if(existe.rowCount === 0){
-            const response = await pool.query('insert into Viendo values($1,$2, current_timestamp)',[id, idmovie])
+            const response = await pool.query('insert into Viendo values($1,$2, current_timestamp,$3)',[id, idmovie,sus])
             console.log(response)
             res.json('Viendo created')
         }
@@ -430,12 +430,12 @@ const createViendo = async (req, res) => {
 const createFav = async (req, res) => {
     try{
         const id = req.params.id
-        const {idmovie} = req.body
+        const {idmovie,sus} = req.body
         
         const existe = await pool.query('select * from favoritos where codigo_contenido = $1',[idmovie])
 
         if(existe.rows.length === 0){
-            const response = await pool.query('insert into favoritos values($1,$2, current_timestamp)',[id, idmovie])
+            const response = await pool.query('insert into favoritos values($1,$2, current_timestamp,$3)',[id, idmovie,sus])
             console.log(response)
             res.json('Favorito created')
         }
