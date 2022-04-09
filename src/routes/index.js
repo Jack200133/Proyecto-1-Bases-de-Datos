@@ -32,10 +32,16 @@ const {getUsers,
     createAdmin,
     AdminCheck,
     updateAdminUser,
-    createPelis
+    createPelis,
+    deleteAdminUser,
+    getAnuncio,
+    getAnunciante,
+    createAnunciante,
+    createAnuncio
 }= require("../controllers/index.controller")
 
 // http://localhost:5000/users/3
+router.get('/',getUsers)
 router.get('/users',getUsers)
 router.get('/users/:id',getUserByID)
 router.get('/usersC/:correo', getUsersByCorreo) 
@@ -69,4 +75,10 @@ router.get('/viendo/:id/:viendo',updateViendo)
 router.post('/admin/',createAdmin)
 router.get('/admin/:name/:pass',AdminCheck)
 router.put('/admin/:id',updateAdminUser)
+router.delete('/admin/:id',deleteAdminUser)
+router.get('/anuncio',getAnuncio)
+router.post('/anuncio',createAnuncio)
+router.get('/anunciante',getAnunciante)
+router.post('/anunciante',createAnunciante)
+
 module.exports = router

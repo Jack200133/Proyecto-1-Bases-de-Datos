@@ -14,7 +14,8 @@
     "cors": "^2.8.5",
     "express": "^4.17.3",
     "exrpess": "^0.0.1-security",
-    "pg": "^8.7.3"
+    "pg": "^8.7.3",
+    "sql-injection": "^0.0.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"

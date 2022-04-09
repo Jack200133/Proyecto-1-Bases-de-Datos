@@ -1,7 +1,6 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-
 // defino middlewares 
 app.use(cors())
 app.use(express.json())
