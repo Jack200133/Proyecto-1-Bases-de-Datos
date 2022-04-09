@@ -407,15 +407,22 @@ const createViendo = async (req, res) => {
         const id = req.params.id
         const {idmovie} = req.body
         
-        const response = await pool.query('insert into Viendo values($1,$2, current_timestamp)',[id, idmovie])
-        console.log(response)
-        res.json('Viendo created')
+        const existe = await pool.query('select * from Viendo where codigo_contenido = $1', [idmovie])
+        console.log(existe.rows)
+
+        if(existe.rowCount === 0){
+            const response = await pool.query('insert into Viendo values($1,$2, current_timestamp)',[id, idmovie])
+            console.log(response)
+            res.json('Viendo created')
+        }
+        
 
     }catch (e){
         console.log("ERROR")
 
         res.json({
-            message:'Error'
+            message:'Error',
+            e:e
         })
     }
     
@@ -425,9 +432,15 @@ const createFav = async (req, res) => {
         const id = req.params.id
         const {idmovie} = req.body
         
-        const response = await pool.query('insert into favoritos values($1,$2, current_timestamp)',[id, idmovie])
-        console.log(response)
-        res.json('Favorito created')
+        const existe = await pool.query('select * from favoritos where codigo_contenido = $1',[idmovie])
+
+        if(existe.rows.length === 0){
+            const response = await pool.query('insert into favoritos values($1,$2, current_timestamp)',[id, idmovie])
+            console.log(response)
+            res.json('Favorito created')
+        }
+
+        
 
     }catch (e){
         console.log("ERROR")
@@ -442,7 +455,7 @@ const createFav = async (req, res) => {
 const getVistoByID = async (req,res)=>{
     try{
         const id = req.params.id
-        const response = await pool.query('SELECT ps.* FROM Visto f join peliculas_series ps on ps.codigo = f.id_contenido WHERE id_perfil = $1',[id])
+        const response = await pool.query('SELECT ps.* FROM Visto f join peliculas_series ps on ps.codigo = f.codigo_contenido WHERE id_perfil = $1',[id])
         res.json(response.rows)
     }catch (e){
         console.log("ERROR")
