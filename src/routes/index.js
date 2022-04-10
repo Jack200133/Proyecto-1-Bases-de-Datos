@@ -37,7 +37,25 @@ const {getUsers,
     getAnuncio,
     getAnunciante,
     createAnunciante,
-    createAnuncio
+    createAnuncio,
+    getReporte1,
+    getReporte2,
+    getReporteD,
+    getReporteA,
+    getReporte4,
+    getReporte5,
+    getActores,
+    getDirector,
+    getGenero,
+    getPremio,
+    createActores,
+    createDirector,
+    createGenero,
+    createPremio,
+    createrelActores,
+    createrelDirector,
+    createrelGenero,
+    createrelPremio
 }= require("../controllers/index.controller")
 
 // http://localhost:5000/users/3
@@ -80,5 +98,25 @@ router.get('/anuncio',getAnuncio)
 router.post('/anuncio',createAnuncio)
 router.get('/anunciante',getAnunciante)
 router.post('/anunciante',createAnunciante)
+router.put('/reporte/1',getReporte1)
+router.put('/reporte/2',getReporte2)
+router.get('/reporte/3/director',getReporteD)
+router.get('/reporte/3/actor',getReporteA)
+router.get('/reporte/4',getReporte4)
+router.put('/reporte/5',getReporte5)
 
+router.get('/actores/',getActores)
+router.get('/director/',getDirector)
+router.get('/generos/',getGenero)
+router.get('/premio/',getPremio)
+
+router.post('/actores/',createActores)
+router.post('/director/',createDirector)
+router.post('/generos/',createGenero)
+router.post('/premio/',createPremio)
+
+router.post('/relactores/',createrelActores)
+router.post('/reldirector/',createrelDirector)
+router.post('/relgeneros/',createrelGenero)
+router.post('/relpremio/',createrelPremio)
 module.exports = router
