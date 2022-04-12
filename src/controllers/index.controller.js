@@ -67,13 +67,13 @@ const createUser = async(req,res)=>{
             console.log(response.rows)
             const secondr =  await pool.query('select * from usuarios where correo = $1', [correo])
             const tercer =  await pool.query('insert into inscripcion values ($1,$2,current_date)', [secondr.rows[0].id,suscripcion])
-            res.json({
+            return res.json({
                 message:'Agregado el usuario',
                 status: true,
                 user:secondr.rows
             })
         }
-        res.json({
+        return res.json({
             message:'Anunciante NO existente',
             status: false,
             body:{
@@ -411,8 +411,8 @@ const createViendo = async (req, res) => {
     try{
         const id = req.params.id
         const {idmovie,sus} = req.body
-        
-        const existe = await pool.query('select * from Viendo where codigo_contenido = $1', [idmovie])
+        console.log("Entre a viendo",idmovie,sus,id)
+        const existe = await pool.query('select * from Viendo where codigo_contenido = $1 and id_perfil = $2', [idmovie,id])
         console.log(existe.rows)
 
         if(existe.rowCount === 0){
@@ -574,10 +574,8 @@ const getRecomendaciones = async (req,res)=>{
         let final = []
         for (const okaru in getGeneros){
            for(const momo in getGeneros[okaru]){
-               console.log(getGeneros[okaru][momo].id_genero)
                const dadadan = await pool.query('select distinct(ps.*) from peliculas_series ps join contenido_genero cg on cg.id_contenido = ps.codigo where cg.id_genero = $1',[getGeneros[okaru][momo].id_genero])
                for(const kirito in dadadan.rows){
-                   console.log(dadadan.rows[kirito].codigo)
                    if(!final.includes(dadadan.rows[kirito])){
                         final.push(dadadan.rows[kirito])
                    }   
