@@ -181,6 +181,9 @@ const passwordCheck = async (req,res) =>{
                     completado: true
                 })
             }else{
+                const id = await pool.query('SELECT id FROM usuarios WHERE correo = $1',[correo])
+                const insert = await pool.query('INSERT INTO intentos_fallidos VALUES($1, current_timestamp)', [id.rows[0].id])
+                console.log(id.rows[0].id)
                 res.json({
                     completado: false
                 })
