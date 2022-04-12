@@ -170,25 +170,36 @@ const passwordCheck = async (req,res) =>{
         const pass = req.params.pass
         console.log(pass,correo)
         const response = await pool.query('SELECT * FROM usuarios WHERE correo = $1',[correo])
-        console.log(response)
+        const banned = await pool.query('SELECT * FROM usuarios WHERE correo = $1 and activo = true',[correo])
+        console.log(response,banned)
         if(response.rowCount === 0){
-            res.json({
-                completado: false
+            return res.json({
+                completado: false,
+                ban: false
             })
         }else{
             const hashed = response.rows[0].contraseña
             const prn = await bcrypt.compare(pass,hashed)
             if(prn){
-                res.json({
-                    completado: true
+                return res.json({
+                    completado: true,
+                    ban: false
                 })
             }else{
-                const id = await pool.query('SELECT id FROM usuarios WHERE correo = $1',[correo])
-                const insert = await pool.query('INSERT INTO intentos_fallidos VALUES($1, current_timestamp)', [id.rows[0].id])
-                console.log(id.rows[0].id)
-                res.json({
-                    completado: false
+                if(banned.rowCount ===0){
+                    const id = await pool.query('SELECT id FROM usuarios WHERE correo = $1',[correo])
+                    const insert = await pool.query('INSERT INTO intentos_fallidos VALUES($1, current_timestamp)', [id.rows[0].id])
+                    console.log(id.rows[0].id)
+                    return res.json({
+                        completado: false,
+                        ban: false
+                    })
+                }
+                return res.json({
+                    completado: true,
+                    ban: true
                 })
+                
             }
         }
 
@@ -196,7 +207,9 @@ const passwordCheck = async (req,res) =>{
         console.log("ERROR")
 
         res.json({
-            message:'Error'
+            message:'Error',
+            completado: false,
+            ban: true
         })
     }
 }
@@ -656,7 +669,8 @@ const AdminCheck = async (req,res) =>{
         console.log("ERROR")
 
         res.json({
-            message:'Error'
+            message:'Error',
+            completado: 'Ban'
         })
     }
 }
