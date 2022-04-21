@@ -170,7 +170,7 @@ const passwordCheck = async (req,res) =>{
         const pass = req.params.pass
         console.log(pass,correo)
         const response = await pool.query('SELECT * FROM usuarios WHERE correo = $1',[correo])
-        const banned = await pool.query('SELECT * FROM usuarios WHERE correo = $1 and activo = true',[correo])
+        const banned = await pool.query('SELECT * FROM usuarios WHERE correo = $1 and estado = true',[correo])
         console.log(response,banned)
         if(response.rowCount === 0){
             return res.json({
