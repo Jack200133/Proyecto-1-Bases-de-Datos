@@ -29,6 +29,7 @@ const {getUsers,
     getRecomendaciones,
     updateViendo,
     AnuncioVisto,
+    getAdmin,
     createAdmin,
     AdminCheck,
     updateAdminUser,
@@ -86,11 +87,12 @@ router.post('/fav/:id',createFav)
 router.get('/fav/:id',getFavByID)
 router.post('/profile', createProfile)
 router.post('/adseen', AnuncioVisto)
-router.get('/profile/:id/:sus/:num',updateProf)
+router.get('/profile/:id/:sus/:num/:admin',updateProf)
 router.get('/anuncios', getAnuncios)
 router.get('/recom/:id', getRecomendaciones)
 router.get('/viendo/:id/:viendo',updateViendo)
 router.post('/admin/',createAdmin)
+router.get('/admin',getAdmin)
 router.get('/admin/:name/:pass',AdminCheck)
 router.put('/admin/:id',updateAdminUser)
 router.delete('/admin/:id',deleteAdminUser)

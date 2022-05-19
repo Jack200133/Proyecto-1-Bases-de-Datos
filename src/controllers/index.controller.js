@@ -54,7 +54,7 @@ const getUsersByCorreo = async (req,res)=>{
 const createUser = async(req,res)=>{
 
     try{
-        const {correo,name,pass,suscripcion} = req.body
+        const {correo,name,pass,suscripcion,admin} = req.body
         //const id = 'DEFAULT'
         const rondas = 10
         const haspass = await bcrypt.hash(pass, rondas);
@@ -63,7 +63,7 @@ const createUser = async(req,res)=>{
         console.log(prof)
         console.log(correo,name,haspass,false,suscripcion)
         if(prof.rowCount ===0){
-            const response = await pool.query('insert into usuarios(correo,nombre,contraseña,estado,suscripcion) values($1,$2,$3,$4,$5)',[correo,name,haspass,false,suscripcion])
+            const response = await pool.query('insert into usuarios(correo,nombre,contraseña,estado,suscripcion, admin_user) values($1,$2,$3,$4,$5,$6)',[correo,name,haspass,false,suscripcion,admin])
             console.log(response.rows)
             const secondr =  await pool.query('select * from usuarios where correo = $1', [correo])
             const tercer =  await pool.query('insert into inscripcion values ($1,$2,current_date)', [secondr.rows[0].id,suscripcion])
@@ -94,21 +94,22 @@ const createUser = async(req,res)=>{
 
 const createPelis = async (req, res) => {
     try{
-        const {nombre, categoria, fecha_estreno, duracion, link, imagen} = req.body
+        const {nombre, categoria, fecha_estreno, duracion, link, imagen,admin} = req.body
 
         const prof = await pool.query('SELECT * FROM peliculas_series WHERE nombre = $1',[nombre])
         
-        console.log(nombre, categoria, fecha_estreno, duracion, link, imagen)
+        console.log(nombre, categoria, fecha_estreno, duracion, link, imagen, admin)
         console.log(prof.rows)
          
         if(prof.rowCount ===0){
-            const response = await pool.query('insert into peliculas_series(nombre,categoria,fecha_estreno,duracion,link,imagen) values($1,$2,$3,$4,$5,$6)',
+            const response = await pool.query('insert into peliculas_series(nombre,categoria,fecha_estreno,duracion,link,imagen,admin_user) values($1,$2,$3,$4,$5,$6,$7)',
             [nombre, 
             categoria,
             fecha_estreno,
             duracion,
             link,
-            imagen])
+            imagen,
+            admin])
             console.log(response)
             const secondr =  await pool.query('select * from peliculas_series where nombre = $1', [nombre])
             return res.json({
@@ -126,7 +127,7 @@ const createPelis = async (req, res) => {
          })
         
     }catch (e){
-        console.log("ERROR")
+        console.log("ERROR",e)
 
         res.status(400).json({
             message:'Error',
@@ -514,9 +515,9 @@ const getViendoByID = async (req,res)=>{
 
 const createProfile = async (req, res)=> {
     try{
-        const {id_usuario, name} = req.body
+        const {id_usuario, name, admin} = req.body
         console.log(name)
-        const response = await pool.query('insert into perfil(id_usuario, nombre, viendo, activo) values ($1,$2,$3,$4)',[id_usuario, name, false, true])
+        const response = await pool.query('insert into perfil(id_usuario, nombre, viendo, activo, admin_user) values ($1,$2,$3,$4,$5)',[id_usuario, name, false, true,admin])
         console.log(response)
         res.json('Perfil created')
     }catch (e){
@@ -534,15 +535,16 @@ const updateProf = async (req, res) => {
         const id = req.params.id
         const sus = req.params.sus
         const num = req.params.num
+        const admin = req.params.admin
         //console.log(id)
         //const {suscripcion,numerocuentas} = req.body
         console.log(id, sus, num)
-        const newSus = await pool.query('UPDATE usuarios SET suscripcion = $1 WHERE id = $2',[sus,id])
+        const newSus = await pool.query('UPDATE usuarios SET suscripcion = $1,admin_user = $2 WHERE id = $3',[sus,admin,id])
         const porfil = await pool.query('select * from perfil where id_usuario =  $1 limit $2',[id,num])
-        const setFalse = await pool.query('UPDATE perfil SET activo = false WHERE id_usuario =$1',[id])
+        const setFalse = await pool.query('UPDATE perfil SET activo = false,admin_user = $1 WHERE id_usuario =$2',[admin,id])
         //console.log(newSus)
         for(const pepe in porfil.rows){
-            const setTreu = await pool.query('UPDATE perfil SET activo = true WHERE id_perfil =$1', [porfil.rows[pepe].id_perfil])
+            const setTreu = await pool.query('UPDATE perfil SET activo = true,admin_user=$1 WHERE id_perfil =$2', [admin,porfil.rows[pepe].id_perfil])
             console.log(porfil.rows[pepe].id_perfil)
         }
         
@@ -611,7 +613,20 @@ const updateViendo = async (req, res) => {
 
 }
 
+const getAdmin = async (req,res) => {
+    try{
+        const response = await pool.query('Select * from administrador order by nombre')
+        res.status(200).json(response.rows)
+    }catch (e){
+        console.log("ERROR")
 
+        res.json({
+            message:'Error',
+            error: e
+        })
+    }
+  
+}
 const createAdmin = async(req,res)=>{
 
     try{
@@ -679,19 +694,19 @@ const updateAdminUser = async (req, res) => {
     try{
         console.log("COMPARTIDO")
         const id = req.params.id
-        const {valor, estado,tabla} = req.body
+        const {valor, estado,tabla,admin} = req.body
         console.log(valor, estado,tabla,id)
         switch(tabla){
             case 'usuarios':
                 console.log('Usuarios')
                 switch(valor){
                     case 'nombre' :
-                        const responseN = await pool.query('update usuarios set nombre = $1 where id = $2', [estado, id])
+                        const responseN = await pool.query('update usuarios set nombre = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseN)
                         res.json('User Updated')
                         break;
                     case 'correo' :
-                        const responseC = await pool.query('update usuarios set correo = $1 where id = $2', [estado, id])
+                        const responseC = await pool.query('update usuarios set correo = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseC)
                         res.json('User Updated')
                         break;
@@ -699,12 +714,12 @@ const updateAdminUser = async (req, res) => {
                         console.log(estado)
                         const est = estado ==='false'? false : true
                         console.log(est)
-                        const responseE = await pool.query('update usuarios set estado = $1 where id = $2', [est, id])
+                        const responseE = await pool.query('update usuarios set estado = $1, admin_user = $2 where id = $3', [estado,admin,id])
                         console.log(responseE.rows)
                         res.json('User Updated')
                         break;
                     case 'suscripcion' :
-                        const responseS = await pool.query('update usuarios set suscripcion = $1 where id = $2', [estado, id])
+                        const responseS = await pool.query('update usuarios set suscripcion = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseS)
                         res.json('User Updated')
                         break;
@@ -714,33 +729,33 @@ const updateAdminUser = async (req, res) => {
                 console.log('peliculas_series')
                 switch(valor){
                     case 'nombre' :
-                        const responseN = await pool.query('update peliculas_series set nombre = $1 where codigo = $2', [estado, id])
+                        const responseN = await pool.query('update peliculas_series set nombre = $1, admin_user = $2 where codigo= $3',  [estado,admin, id])
                         console.log(responseN)
                         res.json('Pelicula Updated')
                         break;
                     case 'categoria' :
-                        const responseC = await pool.query('update peliculas_series set categoria = $1 where codigo = $2', [estado, id])
+                        const responseC = await pool.query('update peliculas_series set categoria = $1, admin_user = $2 where codigo= $3', [estado,admin, id])
                         console.log(responseC)
                         res.json('Pelicula Updated')
                         break;
                     case 'fecha_estreno' :
-                        const responseE = await pool.query('update peliculas_series set fecha_estreno = $1 where codigo = $2', [estado, id])
+                        const responseE = await pool.query('update peliculas_series set fecha_estreno = $1, admin_user = $2 where codigo= $3',  [estado,admin, id])
                         console.log(responseE)
                         res.json('Pelicula Updated')
                         break;
                     case 'duracion' :
                         console.log('duracion')
-                        const responseD = await pool.query('update peliculas_series set duracion = $1 where codigo = $2', [estado, id])
+                        const responseD = await pool.query('update peliculas_series set duracion = $1, admin_user = $2 where codigo= $3',  [estado,admin, id])
                         console.log(responseD)
                         res.json('Pelicula Updated')
                         break;
                     case 'link' :
-                        const responseL = await pool.query('update peliculas_series set link = $1 where codigo = $2', [estado, id])
+                        const responseL = await pool.query('update peliculas_series set link = $1, admin_user = $2 where codigo= $3', [estado,admin, id])
                         console.log(responseL)
                         res.json('Pelicula Updated')
                         break;
                     case 'imagen' :
-                        const responseIM = await pool.query('update peliculas_series set imagen = $1 where codigo = $2', [estado, id])
+                        const responseIM = await pool.query('update peliculas_series set imagen = $1, admin_user = $2 where codigo3= $2', [estado,admin, id])
                         console.log(responseIM)
                         res.json('Pelicula Updated')
                         break;
@@ -750,12 +765,12 @@ const updateAdminUser = async (req, res) => {
                 console.log('actor')
                 switch(valor){
                     case 'nombre' :
-                        const responseN = await pool.query('update actor set nombre = $1 where id = $2', [estado, id])
+                        const responseN = await pool.query('update actor set nombre = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseN)
                         res.json('actor Updated')
                         break;
                     case 'apellido' :
-                        const responseC = await pool.query('update actor set apellido = $1 where id = $2', [estado, id])
+                        const responseC = await pool.query('update actor set apellido = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseC)
                         res.json('actor Updated')
                         break;
@@ -765,12 +780,12 @@ const updateAdminUser = async (req, res) => {
                 console.log('directores')
                 switch(valor){
                     case 'nombre' :
-                        const responseN = await pool.query('update directores set nombre = $1 where id = $2', [estado, id])
+                        const responseN = await pool.query('update directores set nombre = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseN)
                         res.json('directores Updated')
                         break;
                     case 'apellido' :
-                        const responseC = await pool.query('update directores set apellido = $1 where id = $2', [estado, id])
+                        const responseC = await pool.query('update directores set apellido = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseC)
                         res.json('directores Updated')
                         break;
@@ -780,7 +795,7 @@ const updateAdminUser = async (req, res) => {
                 console.log('generos')
                 switch(valor){
                     case 'genero' :
-                        const responseN = await pool.query('update generos set genero = $1 where id = $2', [estado, id])
+                        const responseN = await pool.query('update generos set genero = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseN)
                         res.json('generos Updated')
                         break;
@@ -790,12 +805,12 @@ const updateAdminUser = async (req, res) => {
                 console.log('premios')
                 switch(valor){
                     case 'nombre' :
-                        const responseN = await pool.query('update premios set nombre = $1 where id = $2', [estado, id])
+                        const responseN = await pool.query('update premios set nombre = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseN)
                         res.json('premios Updated')
                         break;
                     case 'descripcion' :
-                        const responseC = await pool.query('update premios set descripcion = $1 where id = $2', [estado, id])
+                        const responseC = await pool.query('update premios set descripcion = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseC)
                         res.json('premios Updated')
                         break;
@@ -805,12 +820,12 @@ const updateAdminUser = async (req, res) => {
                 console.log('anuncio')
                 switch(valor){
                     case 'contenido' :
-                        const responseN = await pool.query('update anuncio set contenido = $1 where id = $2', [estado, id])
+                        const responseN = await pool.query('update anuncio set contenido = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseN)
                         res.json('anuncio Updated')
                         break;
                     case 'link' :
-                        const responseC = await pool.query('update anuncio set link = $1 where id = $2', [estado, id])
+                        const responseC = await pool.query('update anuncio set link = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseC)
                         res.json('anuncio Updated')
                         break;
@@ -820,7 +835,7 @@ const updateAdminUser = async (req, res) => {
                 console.log('anunciantes')
                 switch(valor){
                     case 'anunciante' :
-                        const responseN = await pool.query('update anunciantes set anunciante = $1 where id = $2', [estado, id])
+                        const responseN = await pool.query('update anunciantes set anunciante = $1, admin_user = $2 where id = $3', [estado,admin, id])
                         console.log(responseN)
                         res.json('anunciantes Updated')
                         break;
@@ -923,9 +938,9 @@ const getAnunciante = async (req,res) => {
 
 const createAnunciante = async (req,res) => {
     try{
-        const {anunciante} = req.body
+        const {anunciante,admin} = req.body
         console.log(anunciante)
-        const response = await pool.query('insert into anunciantes(anunciante) values ($1)',[anunciante])
+        const response = await pool.query('insert into anunciantes(anunciante,admin_user) values ($1,$2)',[anunciante,admin])
         console.log(response)
         res.json('Anunciante created')
     }catch (e){
@@ -940,14 +955,14 @@ const createAnunciante = async (req,res) => {
 const createAnuncio = async (req,res) => {
     try{
 
-        const {anunciante, contenido, link} = req.body
+        const {anunciante, contenido, link,admin} = req.body
         
         const getID = await pool.query('select id from anunciantes a  where anunciante = $1',[anunciante])
         console.log(getID.rowCount)
         
         const id = getID.rows[0].id
         console.log(anunciante,contenido,link,id)
-        const response = await pool.query('insert into anuncio(id_anunciante, contenido, link) values ($1, $2, $3)',[id, contenido, link])
+        const response = await pool.query('insert into anuncio(id_anunciante, contenido, link,admin_user) values ($1, $2, $3,$4)',[id, contenido, link,admin])
         console.log(response)
         res.json('Anuncio created')
         
@@ -1121,7 +1136,7 @@ const getPremio = async (req,res) => {
 
 const createActores = async (req, res) => {
     try{
-        const {nombre, apellido} = req.body
+        const {nombre, apellido,admin} = req.body
 
         const prof = await pool.query('SELECT * FROM actor WHERE nombre = $1 and apellido =$2',[nombre,apellido])
         
@@ -1129,7 +1144,7 @@ const createActores = async (req, res) => {
         console.log(prof.rows)
          
         if(prof.rowCount ===0){
-            const response = await pool.query('insert into actor(nombre,apellido) values($1,$2)',[nombre,apellido])
+            const response = await pool.query('insert into actor(nombre,apellido,admin_user) values($1,$2,$3)',[nombre,apellido,admin])
             
             console.log(response)
             const secondr =  await pool.query('select * from actor where nombre = $1 and apellido =$2', [nombre,apellido])
@@ -1411,6 +1426,7 @@ module.exports = {
     updateViendo,
     AnuncioVisto,
     createAdmin,
+    getAdmin,
     AdminCheck,
     updateAdminUser,
     createPelis,
