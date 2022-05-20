@@ -45,6 +45,10 @@ const {getUsers,
     getReporteA,
     getReporte4,
     getReporte5,
+    getReporte6,
+    getReporte7,
+    getReporte8,
+    getReporte9,
     getActores,
     getDirector,
     getGenero,
@@ -56,7 +60,9 @@ const {getUsers,
     createrelActores,
     createrelDirector,
     createrelGenero,
-    createrelPremio
+    createrelPremio,
+    Simulacion,
+    createSearch
 }= require("../controllers/index.controller")
 
 // http://localhost:5000/users/3
@@ -87,7 +93,7 @@ router.post('/fav/:id',createFav)
 router.get('/fav/:id',getFavByID)
 router.post('/profile', createProfile)
 router.post('/adseen', AnuncioVisto)
-router.get('/profile/:id/:sus/:num/:admin',updateProf)
+router.get('/profile/:id/:sus/:num/:admin/:boolean',updateProf)
 router.get('/anuncios', getAnuncios)
 router.get('/recom/:id', getRecomendaciones)
 router.get('/viendo/:id/:viendo',updateViendo)
@@ -106,6 +112,10 @@ router.get('/reporte/3/director',getReporteD)
 router.get('/reporte/3/actor',getReporteA)
 router.get('/reporte/4',getReporte4)
 router.put('/reporte/5',getReporte5)
+router.post('/reporte/6',getReporte6)
+router.get('/reporte/7',getReporte7)
+router.post('/reporte/8',getReporte8)
+router.post('/reporte/9',getReporte9)
 
 router.get('/actores/',getActores)
 router.get('/director/',getDirector)
@@ -121,4 +131,7 @@ router.post('/relactores/',createrelActores)
 router.post('/reldirector/',createrelDirector)
 router.post('/relgeneros/',createrelGenero)
 router.post('/relpremio/',createrelPremio)
+
+router.post('/simulacion/',Simulacion)
+router.post('/search',createSearch)
 module.exports = router
